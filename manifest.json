@@ -4,9 +4,7 @@
   "version": "1.0",
   "description": "Organize your Chrome tabs efficiently",
   "permissions": [
-    "tabs",
-    "storage",
-    "tabGroups"
+    "tabs"
   ],
   "host_permissions": [
     "<all_urls>"
