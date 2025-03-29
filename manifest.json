@@ -4,11 +4,15 @@
   "version": "1.0",
   "description": "Organize your Chrome tabs efficiently",
   "permissions": [
-    "tabs"
+    "tabs",
+    "commands"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -21,5 +25,28 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+O",
+        "mac": "Command+Shift+O"
+      },
+      "description": "Open Tab Organizer"
+    },
+    "organize-tabs": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+9",
+        "mac": "Command+Shift+9"
+      },
+      "description": "Organize tabs by domain"
+    },
+    "remove-duplicates": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+0",
+        "mac": "Command+Shift+0"
+      },
+      "description": "Remove duplicate tabs"
+    }
   }
 } 

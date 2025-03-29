@@ -1,65 +1,52 @@
-# Chrome Tab Organizer
+# Tab Organizer Chrome Extension
 
-A Chrome extension that helps you organize your tabs efficiently by grouping them based on domain and removing duplicates.
+A Chrome extension that helps you organize your browser tabs efficiently by grouping them by domain and removing duplicates.
 
 ## Features
 
-- Organize tabs by domain (e.g., all GitHub tabs together)
-- Remove duplicate tabs (keep only one instance of each URL)
-- View statistics about your tabs and groups
-- Modern, clean interface
-- Color-coded groups for easy identification
-- Click on any group to focus its first tab
-- Preserves pinned tabs in their original position
+- **Domain-based Organization**: Automatically groups tabs by their main domain
+- **Duplicate Removal**: Easily remove duplicate tabs with a single click
+- **Visual Grouping**: Tabs from the same domain are visually grouped with color coding
+- **Clickable Groups**: Click on any group to jump to the first tab of that domain
+- **Keyboard Shortcuts**: Quick access to all features via keyboard shortcuts
+- **Pinned Tab Support**: Preserves pinned tabs while organizing
+- **Real-time Statistics**: Shows total tabs and unique domains
+
+## Keyboard Shortcuts
+
+- `Command+Shift+O` (Mac) or `Ctrl+Shift+O` (Windows/Linux): Open Tab Organizer popup
+- `Command+Shift+9` (Mac) or `Ctrl+Shift+9` (Windows/Linux): Organize tabs by domain
+- `Command+Shift+0` (Mac) or `Ctrl+Shift+0` (Windows/Linux): Remove duplicate tabs
+
+You can customize these shortcuts in Chrome by visiting `chrome://extensions/shortcuts`.
 
 ## Installation
 
-1. Clone or download this repository
+1. Clone this repository or download the source code
 2. Open Chrome and go to `chrome://extensions/`
-3. Enable "Developer mode" in the top right corner
-4. Click "Load unpacked" and select the directory containing these files
+3. Enable "Developer mode" in the top right
+4. Click "Load unpacked" and select the extension directory
 
 ## Usage
 
-1. Click the extension icon in your Chrome toolbar
-2. Use the buttons to manage your tabs:
-   - Click "Organize" to group tabs by domain (e.g., all GitHub tabs together)
-   - Click "Deduplicate" to remove duplicate tabs, keeping only one instance of each URL
-3. View your current groups and tab statistics in the popup
-4. Click on any group to focus its first tab
-
-## Features in Detail
-
-### Tab Organization
-- Tabs are grouped by their main domain (e.g., "mail.google.com" and "calendar.google.com" are grouped under "google.com")
-- Groups are sorted by the number of tabs they contain
-- Pinned tabs remain in their original position
-- Groups are displayed with alternating light blue and light green backgrounds
-
-### Duplicate Removal
-- Removes duplicate tabs while keeping the first instance of each URL
-- Only affects unpinned tabs
-- Updates the display automatically after removal
-
-### Group Navigation
-- Click on any group to focus its first tab
-- Groups show the number of tabs they contain
-- Hover effects provide visual feedback for interactive elements
+1. Click the extension icon in your Chrome toolbar to open the popup
+2. Use the "Organize" button to group tabs by domain
+3. Use the "Deduplicate" button to remove duplicate tabs
+4. Click on any group to jump to the first tab of that domain
+5. Use keyboard shortcuts for quick access to features
 
 ## Development
 
-The extension is built using:
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- Chrome Extension APIs (tabs, storage)
+The extension is built using vanilla JavaScript and Chrome Extension APIs. The main components are:
 
-## Permissions
+- `popup.html`: The extension's popup interface
+- `popup.js`: Handles UI interactions and displays tab groups
+- `background.js`: Manages keyboard shortcuts and background tasks
+- `styles.css`: Styling for the popup interface
 
-This extension requires the following permissions:
-- `tabs`: To access and manipulate browser tabs
-- `storage`: To save extension settings
-- `host_permissions`: To access tab URLs for domain grouping
+## Privacy
+
+This extension only uses the necessary permissions to organize your tabs. It does not collect or transmit any personal data. All operations are performed locally in your browser.
 
 ## License
 
