@@ -29,6 +29,7 @@ h2 {
 
 .actions {
   display: flex;
+  flex-direction: row;
   gap: 10px;
   margin-bottom: 20px;
 }
@@ -41,6 +42,7 @@ h2 {
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s;
+  flex: 1;
 }
 
 .btn.primary {
@@ -98,6 +100,12 @@ h2 {
   margin-bottom: 10px;
   border-radius: 4px;
   overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.group-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .group-header {
@@ -108,6 +116,11 @@ h2 {
   color: #333;
   font-size: 14px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.group-header:hover {
+  filter: brightness(0.95);
 }
 
 .tab-count {

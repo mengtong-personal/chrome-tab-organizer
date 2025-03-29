@@ -1,14 +1,16 @@
 # Chrome Tab Organizer
 
-A Chrome extension that helps you organize your tabs efficiently by grouping them based on domain or time accessed.
+A Chrome extension that helps you organize your tabs efficiently by grouping them based on domain and removing duplicates.
 
 ## Features
 
-- Group tabs by domain (e.g., all GitHub tabs together)
-- Group tabs by time accessed (Last 5 minutes, Last hour, Older)
+- Organize tabs by domain (e.g., all GitHub tabs together)
+- Remove duplicate tabs (keep only one instance of each URL)
 - View statistics about your tabs and groups
 - Modern, clean interface
 - Color-coded groups for easy identification
+- Click on any group to focus its first tab
+- Preserves pinned tabs in their original position
 
 ## Installation
 
@@ -20,10 +22,29 @@ A Chrome extension that helps you organize your tabs efficiently by grouping the
 ## Usage
 
 1. Click the extension icon in your Chrome toolbar
-2. Choose how you want to organize your tabs:
-   - Click "Group by Domain" to group tabs from the same website together
-   - Click "Group by Time" to group tabs based on when they were last accessed
+2. Use the buttons to manage your tabs:
+   - Click "Organize" to group tabs by domain (e.g., all GitHub tabs together)
+   - Click "Deduplicate" to remove duplicate tabs, keeping only one instance of each URL
 3. View your current groups and tab statistics in the popup
+4. Click on any group to focus its first tab
+
+## Features in Detail
+
+### Tab Organization
+- Tabs are grouped by their main domain (e.g., "mail.google.com" and "calendar.google.com" are grouped under "google.com")
+- Groups are sorted by the number of tabs they contain
+- Pinned tabs remain in their original position
+- Groups are displayed with alternating light blue and light green backgrounds
+
+### Duplicate Removal
+- Removes duplicate tabs while keeping the first instance of each URL
+- Only affects unpinned tabs
+- Updates the display automatically after removal
+
+### Group Navigation
+- Click on any group to focus its first tab
+- Groups show the number of tabs they contain
+- Hover effects provide visual feedback for interactive elements
 
 ## Development
 
@@ -31,14 +52,14 @@ The extension is built using:
 - HTML5
 - CSS3
 - JavaScript (ES6+)
-- Chrome Extension APIs (tabs, tabGroups, storage)
+- Chrome Extension APIs (tabs, storage)
 
 ## Permissions
 
 This extension requires the following permissions:
 - `tabs`: To access and manipulate browser tabs
 - `storage`: To save extension settings
-- `tabGroups`: To create and manage tab groups
+- `host_permissions`: To access tab URLs for domain grouping
 
 ## License
 

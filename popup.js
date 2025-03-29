@@ -5,13 +5,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Found tabs:', tabs);
     updateStats(tabs);
 
-    // Add event listener to button
+    // Add event listeners to buttons
     document.getElementById('groupByDomain').addEventListener('click', async () => {
       try {
         console.log('Reordering by domain...');
         await reorderTabsByDomain(tabs);
       } catch (error) {
         console.error('Error reordering by domain:', error);
+      }
+    });
+
+    document.getElementById('removeDuplicates').addEventListener('click', async () => {
+      try {
+        console.log('Removing duplicates...');
+        await removeDuplicateTabs(tabs);
+      } catch (error) {
+        console.error('Error removing duplicates:', error);
       }
     });
 
@@ -90,14 +99,60 @@ async function reorderTabsByDomain(tabs) {
   }
 }
 
+async function removeDuplicateTabs(tabs) {
+  try {
+    // Keep track of seen URLs and their first occurrence
+    const seenUrls = new Map();
+
+    // First pass: identify duplicates
+    tabs.forEach(tab => {
+      try {
+        const url = new URL(tab.url).href; // Use full URL for comparison
+        if (!seenUrls.has(url)) {
+          seenUrls.set(url, tab);
+        }
+      } catch (error) {
+        console.error('Error processing tab:', tab, error);
+      }
+    });
+
+    // Close duplicate tabs
+    const tabsToClose = tabs.filter(tab => {
+      try {
+        const url = new URL(tab.url).href;
+        return seenUrls.get(url) !== tab;
+      } catch (error) {
+        return false;
+      }
+    });
+
+    // Close all duplicate tabs
+    if (tabsToClose.length > 0) {
+      await chrome.tabs.remove(tabsToClose.map(tab => tab.id));
+      console.log(`Closed ${tabsToClose.length} duplicate tabs`);
+    }
+
+    // Update display
+    const remainingTabs = await chrome.tabs.query({ currentWindow: true });
+    await displayExistingGroups();
+  } catch (error) {
+    console.error('Error in removeDuplicateTabs:', error);
+    throw error;
+  }
+}
+
 async function displayExistingGroups() {
   const tabs = await chrome.tabs.query({ currentWindow: true });
   const groupsList = document.getElementById('groupsList');
   groupsList.innerHTML = '';
 
-  // Group tabs by main domain for display
+  // Separate pinned and unpinned tabs
+  const pinnedTabs = tabs.filter(tab => tab.pinned);
+  const unpinnedTabs = tabs.filter(tab => !tab.pinned);
+
+  // Group unpinned tabs by main domain for display
   const groups = {};
-  tabs.forEach(tab => {
+  unpinnedTabs.forEach(tab => {
     try {
       const url = new URL(tab.url);
       const mainDomain = getMainDomain(url.hostname);
@@ -110,16 +165,36 @@ async function displayExistingGroups() {
     }
   });
 
+  // Convert groups to array and sort by tab count
+  const sortedGroups = Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+
   // Display groups
-  for (const [mainDomain, domainTabs] of Object.entries(groups)) {
+  for (const [mainDomain, domainTabs] of sortedGroups) {
     const groupElement = document.createElement('div');
     groupElement.className = 'group-item';
+    groupElement.style.cursor = 'pointer';
     groupElement.innerHTML = `
       <div class="group-header" style="background-color: ${getColorForDomain(mainDomain)}">
         <span>${mainDomain}</span>
         <span class="tab-count">${domainTabs.length} tabs</span>
       </div>
     `;
+
+    // Add click handler to focus the first tab of this domain
+    groupElement.addEventListener('click', async () => {
+      try {
+        const firstTab = domainTabs[0];
+        if (firstTab) {
+          // Activate the tab
+          await chrome.tabs.update(firstTab.id, { active: true });
+          // Focus the window
+          await chrome.windows.update(firstTab.windowId, { focused: true });
+        }
+      } catch (error) {
+        console.error('Error focusing tab:', error);
+      }
+    });
+
     groupsList.appendChild(groupElement);
   }
 
