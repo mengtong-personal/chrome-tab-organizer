@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('groupByDomain').addEventListener('click', async () => {
       try {
         await reorderTabsByDomain(tabs);
+        showFeedback('Tabs organized by domain');
       } catch (error) {
         console.error('Error reordering by domain:', error);
       }
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('removeDuplicates').addEventListener('click', async () => {
       try {
         await removeDuplicateTabs(tabs);
+        showFeedback('Duplicate tabs removed');
       } catch (error) {
         console.error('Error removing duplicates:', error);
       }
@@ -25,6 +27,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error in initialization:', error);
   }
 });
+
+function showFeedback(message) {
+  const feedback = document.getElementById('feedback');
+  feedback.textContent = message;
+  feedback.classList.add('show');
+  
+  // Hide the feedback after 2 seconds
+  setTimeout(() => {
+    feedback.classList.remove('show');
+  }, 2000);
+}
 
 // Store domain colors
 const domainColors = new Map();
