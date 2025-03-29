@@ -1,12 +1,27 @@
+import {
+  getTabMainDomain,
+  groupTabsByDomain,
+  findDuplicateTabs,
+  showFeedback,
+  getColorForDomain
+} from './utils.js';
+
+let currentTabs = [];
+
+async function refreshTabs() {
+  currentTabs = await chrome.tabs.query({ currentWindow: true });
+  return currentTabs;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const tabs = await chrome.tabs.query({ currentWindow: true });
-    updateStats(tabs);
+    currentTabs = await refreshTabs();
+    updateStats(currentTabs);
 
     // Add event listeners to buttons
     document.getElementById('groupByDomain').addEventListener('click', async () => {
       try {
-        await reorderTabsByDomain(tabs);
+        await reorderTabsByDomain(currentTabs);
         showFeedback('Tabs organized by domain');
       } catch (error) {
         console.error('Error reordering by domain:', error);
@@ -15,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('removeDuplicates').addEventListener('click', async () => {
       try {
-        await removeDuplicateTabs(tabs);
+        await removeDuplicateTabs(currentTabs);
         showFeedback('Duplicate tabs removed');
       } catch (error) {
         console.error('Error removing duplicates:', error);
@@ -28,65 +43,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-function showFeedback(message) {
-  const feedback = document.getElementById('feedback');
-  feedback.textContent = message;
-  feedback.classList.add('show');
-  
-  // Hide the feedback after 2 seconds
-  setTimeout(() => {
-    feedback.classList.remove('show');
-  }, 2000);
-}
-
-// Store domain colors
-const domainColors = new Map();
-
-function getMainDomain(hostname) {
-  const parts = hostname.split('.');
-  return parts.length > 2 ? parts.slice(-2).join('.') : hostname;
-}
-
-function getColorForDomain(domain) {
-  const mainDomain = getMainDomain(domain);
-  if (!domainColors.has(mainDomain)) {
-    const colors = ['#e3f2fd', '#e8f5e9'];
-    const colorIndex = domainColors.size % 2;
-    domainColors.set(mainDomain, colors[colorIndex]);
-  }
-  return domainColors.get(mainDomain);
-}
-
 async function removeDuplicateTabs(tabs) {
   try {
-    const seenUrls = new Map();
-    
-    // Identify duplicates
-    tabs.forEach(tab => {
-      try {
-        const url = new URL(tab.url).href;
-        if (!seenUrls.has(url)) {
-          seenUrls.set(url, tab);
-        }
-      } catch (error) {
-        console.error('Error processing tab:', tab, error);
-      }
-    });
-
-    // Close duplicate tabs
-    const tabsToClose = tabs.filter(tab => {
-      try {
-        const url = new URL(tab.url).href;
-        return seenUrls.get(url) !== tab;
-      } catch (error) {
-        return false;
-      }
-    });
-
-    if (tabsToClose.length > 0) {
-      await chrome.tabs.remove(tabsToClose.map(tab => tab.id));
+    const duplicates = findDuplicateTabs(tabs);
+    if (duplicates.length > 0) {
+      await chrome.tabs.remove(duplicates.map(tab => tab.id));
+      currentTabs = await refreshTabs();
     }
-
     await displayExistingGroups();
   } catch (error) {
     console.error('Error in removeDuplicateTabs:', error);
@@ -98,21 +61,7 @@ async function reorderTabsByDomain(tabs) {
   try {
     const pinnedTabs = tabs.filter(tab => tab.pinned);
     const unpinnedTabs = tabs.filter(tab => !tab.pinned);
-
-    // Group unpinned tabs by main domain
-    const groups = {};
-    unpinnedTabs.forEach(tab => {
-      try {
-        const url = new URL(tab.url);
-        const mainDomain = getMainDomain(url.hostname);
-        if (!groups[mainDomain]) {
-          groups[mainDomain] = [];
-        }
-        groups[mainDomain].push(tab);
-      } catch (error) {
-        console.error('Error processing tab:', tab, error);
-      }
-    });
+    const groups = groupTabsByDomain(unpinnedTabs);
 
     // Reorder tabs by domain
     let currentIndex = pinnedTabs.length;
@@ -126,6 +75,7 @@ async function reorderTabsByDomain(tabs) {
       }
     }
 
+    currentTabs = await refreshTabs();
     await displayExistingGroups();
   } catch (error) {
     console.error('Error in reorderTabsByDomain:', error);
@@ -134,27 +84,12 @@ async function reorderTabsByDomain(tabs) {
 }
 
 async function displayExistingGroups() {
-  const tabs = await chrome.tabs.query({ currentWindow: true });
   const groupsList = document.getElementById('groupsList');
   groupsList.innerHTML = '';
 
-  const pinnedTabs = tabs.filter(tab => tab.pinned);
-  const unpinnedTabs = tabs.filter(tab => !tab.pinned);
-
-  // Group unpinned tabs by main domain
-  const groups = {};
-  unpinnedTabs.forEach(tab => {
-    try {
-      const url = new URL(tab.url);
-      const mainDomain = getMainDomain(url.hostname);
-      if (!groups[mainDomain]) {
-        groups[mainDomain] = [];
-      }
-      groups[mainDomain].push(tab);
-    } catch (error) {
-      console.error('Error processing tab:', tab, error);
-    }
-  });
+  const pinnedTabs = currentTabs.filter(tab => tab.pinned);
+  const unpinnedTabs = currentTabs.filter(tab => !tab.pinned);
+  const groups = groupTabsByDomain(unpinnedTabs);
 
   // Sort and display groups
   const sortedGroups = Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
@@ -185,17 +120,11 @@ async function displayExistingGroups() {
     groupsList.appendChild(groupElement);
   }
 
-  updateStats(tabs);
+  updateStats(currentTabs);
 }
 
 function updateStats(tabs) {
   document.getElementById('totalTabs').textContent = tabs.length;
   const unpinnedTabs = tabs.filter(tab => !tab.pinned);
-  document.getElementById('totalGroups').textContent = new Set(unpinnedTabs.map(tab => {
-    try {
-      return getMainDomain(new URL(tab.url).hostname);
-    } catch (error) {
-      return 'unknown';
-    }
-  })).size;
+  document.getElementById('totalGroups').textContent = new Set(unpinnedTabs.map(tab => getTabMainDomain(tab))).size;
 }
