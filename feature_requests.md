@@ -1,0 +1,1 @@
+* Users should be able to revert the last organize or deduplicate actions.
