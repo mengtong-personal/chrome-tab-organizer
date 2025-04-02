@@ -1,24 +1,13 @@
-# Tab Organizer Chrome Extension
+# Chrome Tab Organizer
 
-A Chrome extension that helps you organize your browser tabs efficiently by grouping them by domain and removing duplicates.
+A Chrome extension that helps you organize your tabs efficiently by grouping them by domain and removing duplicates.
 
 ## Features
 
-- **Domain-based Organization**: Automatically groups tabs by their main domain
-- **Duplicate Removal**: Easily remove duplicate tabs with a single click
-- **Visual Grouping**: Tabs from the same domain are visually grouped with color coding
-- **Clickable Groups**: Click on any group to jump to the first tab of that domain
-- **Keyboard Shortcuts**: Quick access to all features via keyboard shortcuts
-- **Pinned Tab Support**: Preserves pinned tabs while organizing
-- **Real-time Statistics**: Shows total tabs and unique domains
-
-## Keyboard Shortcuts
-
-- `Command+Shift+O` (Mac) or `Ctrl+Shift+O` (Windows/Linux): Open Tab Organizer popup
-- `Command+Shift+9` (Mac) or `Ctrl+Shift+9` (Windows/Linux): Organize tabs by domain
-- `Command+Shift+0` (Mac) or `Ctrl+Shift+0` (Windows/Linux): Remove duplicate tabs
-
-You can customize these shortcuts in Chrome by visiting `chrome://extensions/shortcuts`.
+- **Organize by Domain**: Automatically groups tabs by their main domain
+- **Remove Duplicates**: Identifies and removes duplicate tabs
+- **Merge Windows**: Move all tabs from other windows to the current window
+- **Keyboard Shortcuts**: Quick access to all features
 
 ## Installation
 
@@ -29,20 +18,42 @@ You can customize these shortcuts in Chrome by visiting `chrome://extensions/sho
 
 ## Usage
 
-1. Click the extension icon in your Chrome toolbar to open the popup
-2. Use the "Organize" button to group tabs by domain
-3. Use the "Deduplicate" button to remove duplicate tabs
-4. Click on any group to jump to the first tab of that domain
-5. Use keyboard shortcuts for quick access to features
+### Button Interface
+- Click "Organize" to group tabs by domain
+- Click "Dedup" to remove duplicate tabs
+- Click "Merge" to move all tabs from other windows to the current window
+
+### Keyboard Shortcuts
+- `Command+Shift+8` (Mac) / `Ctrl+Shift+8` (Windows/Linux): Organize tabs by domain
+- `Command+Shift+9` (Mac) / `Ctrl+Shift+9` (Windows/Linux): Remove duplicate tabs
+- `Command+Shift+0` (Mac) / `Ctrl+Shift+0` (Windows/Linux): Merge all tabs from other windows
+
+## Features in Detail
+
+### Organize by Domain
+- Groups tabs by their main domain (e.g., google.com, github.com)
+- Preserves pinned tabs at the start
+- Maintains tab order within each domain group
+
+### Remove Duplicates
+- Identifies tabs with the same URL
+- Keeps the first occurrence of each URL
+- Removes all other duplicates
+
+### Merge Windows
+- Moves all tabs from other windows to the current window
+- Preserves all tabs, including pinned ones
+- Appends tabs to the end of the current window
 
 ## Development
 
-The extension is built using vanilla JavaScript and Chrome Extension APIs. The main components are:
+The extension is built using vanilla JavaScript and Chrome Extension APIs. The code is organized into:
 
 - `popup.html`: The extension's popup interface
-- `popup.js`: Handles UI interactions and displays tab groups
+- `popup.js`: Handles popup UI interactions
 - `background.js`: Manages keyboard shortcuts and background tasks
-- `styles.css`: Styling for the popup interface
+- `utils.js`: Contains utility functions for tab management
+- `styles.css`: Defines the extension's styling
 
 ## Privacy
 

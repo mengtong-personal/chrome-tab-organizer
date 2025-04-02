@@ -5,7 +5,8 @@
   "description": "Organize your Chrome tabs efficiently",
   "permissions": [
     "tabs",
-    "commands"
+    "storage",
+    "windows"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -37,17 +38,24 @@
     },
     "organize-tabs": {
       "suggested_key": {
-        "default": "Ctrl+Shift+9",
-        "mac": "Command+Shift+9"
+        "default": "Ctrl+Shift+8",
+        "mac": "Command+Shift+8"
       },
       "description": "Organize tabs by domain"
     },
     "remove-duplicates": {
       "suggested_key": {
+        "default": "Ctrl+Shift+9",
+        "mac": "Command+Shift+9"
+      },
+      "description": "Remove duplicate tabs"
+    },
+    "merge-windows": {
+      "suggested_key": {
         "default": "Ctrl+Shift+0",
         "mac": "Command+Shift+0"
       },
-      "description": "Remove duplicate tabs"
+      "description": "Move all tabs from other windows to current window"
     }
   }
 } 

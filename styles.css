@@ -36,9 +36,14 @@ h2 {
 
 .actions {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
 }
 
 .btn {
@@ -49,17 +54,39 @@ h2 {
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 1;
 }
 
-.btn.primary, .btn.secondary {
+.btn.primary {
   background-color: #1a73e8;
   color: white;
 }
 
-.btn.primary:hover, .btn.secondary:hover {
+.btn.secondary {
+  background-color: #5f6368;
+  color: white;
+  flex: 1;
+  padding: 8px;
+}
+
+.btn.primary:hover {
   background-color: #1557b0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn.secondary:hover {
+  background-color: #3c4043;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn:disabled {
+  background-color: #dadce0;
+  color: #80868b;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .groups-container {
