@@ -122,11 +122,20 @@ h2 {
   color: #5f6368;
 }
 
-.group-item {
+.group-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 10px;
+  padding-right: 8px;
+}
+
+.group-item {
+  flex: 1;
   border-radius: 4px;
   overflow: hidden;
   transition: transform 0.2s ease;
+  max-width: calc(100% - 40px);
 }
 
 .group-item:hover {
@@ -135,14 +144,14 @@ h2 {
 }
 
 .group-header {
-  padding: 8px 12px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
   color: #333;
+  border-radius: 4px;
   font-size: 14px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  cursor: pointer;
 }
 
 .group-header:hover {
@@ -154,7 +163,7 @@ h2 {
   padding: 2px 6px;
   border-radius: 12px;
   font-size: 12px;
-  color: #666;
+  color: #333;
 }
 
 .feedback {
@@ -175,4 +184,31 @@ h2 {
 .feedback.show {
   opacity: 1;
   visibility: visible;
+}
+
+.move-to-window-btn {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.move-to-window-btn:hover {
+  filter: brightness(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.move-to-window-btn:active {
+  filter: brightness(0.9);
+  transform: translateY(1px);
 } 

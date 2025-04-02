@@ -104,18 +104,29 @@ async function displayExistingGroups() {
 
   // Sort and display groups
   const sortedGroups = Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
-  
+
   for (const [mainDomain, domainTabs] of sortedGroups) {
+    const groupContainer = document.createElement('div');
+    groupContainer.className = 'group-container';
+
     const groupElement = document.createElement('div');
     groupElement.className = 'group-item';
     groupElement.style.cursor = 'pointer';
+    const groupColor = getColorForDomain(mainDomain);
     groupElement.innerHTML = `
-      <div class="group-header" style="background-color: ${getColorForDomain(mainDomain)}">
+      <div class="group-header" style="background-color: ${groupColor}">
         <span>${mainDomain}</span>
         <span class="tab-count">${domainTabs.length} tabs</span>
       </div>
     `;
 
+    const moveButton = document.createElement('button');
+    moveButton.className = 'move-to-window-btn';
+    moveButton.title = 'Move to new window';
+    moveButton.textContent = '↗';
+    moveButton.style.backgroundColor = groupColor;
+
+    // Add click handler for the group header
     groupElement.addEventListener('click', async () => {
       try {
         const firstTab = domainTabs[0];
@@ -128,10 +139,75 @@ async function displayExistingGroups() {
       }
     });
 
-    groupsList.appendChild(groupElement);
+    // Add click handler for the move button
+    moveButton.addEventListener('click', async () => {
+      try {
+        await moveGroupToNewWindow(domainTabs);
+        showFeedback(`Moved ${domainTabs.length} tabs to new window`);
+      } catch (error) {
+        console.error('Error moving group to new window:', error);
+      }
+    });
+
+    groupContainer.appendChild(groupElement);
+    groupContainer.appendChild(moveButton);
+    groupsList.appendChild(groupContainer);
   }
 
   updateStats(currentTabs);
+}
+
+async function moveGroupToNewWindow(tabs) {
+  try {
+    const currentTab = await chrome.tabs.query({ active: true, currentWindow: true });
+    const currentTabId = currentTab[0]?.id;
+
+    const nonCurrentTabsToMove = tabs.filter(tab => tab.id !== currentTabId);
+    const currentTabToMove = tabs.filter(tab => tab.id === currentTabId);
+
+    if (currentTabToMove.length == 0) {
+      const newWindow = await chrome.windows.create({
+        url: tabs[0].url
+      });
+      await chrome.tabs.remove(tabs[0].id);
+      for (let i = 1; i < tabs.length; i++) {
+        await chrome.tabs.move(tabs[i].id, {
+          windowId: newWindow.id,
+          index: -1 // Append to the end
+        });
+      }
+    } else if (nonCurrentTabsToMove.length == 0) {
+      await chrome.windows.create({
+        url: currentTab.url
+      });
+      await chrome.tabs.remove(currentTab.id);
+    } else {
+      const newWindow = await chrome.windows.create({
+        url: nonCurrentTabsToMove[0].url
+      });
+      await chrome.tabs.remove(nonCurrentTabsToMove[0].id);
+      for (let i = 1; i < nonCurrentTabsToMove.length; i++) {
+        await chrome.tabs.move(nonCurrentTabsToMove[i].id, {
+          windowId: newWindow.id,
+          index: -1 // Append to the end
+        });
+      }
+      await chrome.tabs.move(currentTabId, {
+        windowId: newWindow.id,
+        index: -1 // Append to the end
+      });
+    }
+
+    // Close the popup
+    window.close();
+
+    // Refresh the current tabs list
+    currentTabs = await refreshTabs();
+    await displayExistingGroups();
+  } catch (error) {
+    console.error('Error in moveGroupToNewWindow:', error);
+    throw error;
+  }
 }
 
 function updateStats(tabs) {
