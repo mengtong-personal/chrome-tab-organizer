@@ -121,10 +121,17 @@ async function displayExistingGroups() {
     `;
 
     const moveButton = document.createElement('button');
-    moveButton.className = 'move-to-window-btn';
+    moveButton.className = 'group-btn';
     moveButton.title = 'Move to new window';
     moveButton.textContent = '↗';
     moveButton.style.backgroundColor = groupColor;
+
+    const closeGroupButton = document.createElement('button');
+    closeGroupButton.className = 'group-btn';
+    closeGroupButton.title = 'Close this group';
+    closeGroupButton.textContent = '✕';
+    closeGroupButton.style.backgroundColor = groupColor;
+    closeGroupButton.style.marginLeft = '5px';
 
     // Add click handler for the group header
     groupElement.addEventListener('click', async () => {
@@ -149,8 +156,20 @@ async function displayExistingGroups() {
       }
     });
 
+    // Add click handler for the close group button
+    closeGroupButton.addEventListener('click', async (event) => {
+      event.stopPropagation();
+      try {
+        await closeTabGroup(domainTabs);
+        showFeedback(`Closed ${domainTabs.length} tabs from ${mainDomain}`);
+      } catch (error) {
+        console.error('Error closing group:', error);
+      }
+    });
+
     groupContainer.appendChild(groupElement);
     groupContainer.appendChild(moveButton);
+    groupContainer.appendChild(closeGroupButton);
     groupsList.appendChild(groupContainer);
   }
 
@@ -248,5 +267,20 @@ async function moveTabsToCurrentWindow() {
   } catch (error) {
     console.error('Error moving tabs:', error);
     throw error;
+  }
+}
+
+async function closeTabGroup(tabsToClose) {
+  try {
+    const tabIdsToClose = tabsToClose.map(tab => tab.id);
+    if (tabIdsToClose.length > 0) {
+      await chrome.tabs.remove(tabIdsToClose);
+    }
+    // Refresh the tabs list and UI
+    currentTabs = await refreshTabs();
+    await displayExistingGroups();
+  } catch (error) {
+    console.error('Error in closeTabGroup:', error);
+    throw error; // Re-throw to be caught by the caller if necessary
   }
 }
